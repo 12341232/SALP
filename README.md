@@ -1,54 +1,31 @@
-# AMEMA: Adaptive Momentum and EMA-weighted Modeling for Imbalanced Label Distribution Learning
+# SAPL: Structure-Aware Adaptive Pseudo-Labeling for Semi-Supervised Partial Label Learning
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-1.12.1-orange.svg)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/wenhuhiji/AMEMA?style=social)](https://github.com/wenhuhiji/AMEMA)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Framework: PyTorch](https://img.shields.io/badge/Framework-PyTorch-orange.svg)](https://pytorch.org/)
 
+This repository contains the official PyTorch implementation of the paper:
 
-## 项目概述
-在分类任务中，**不平衡标签分布**（如长尾数据集）会导致模型偏向多数类、忽视少数类。本项目提出 **AMEMA（Adaptive Momentum + EMA-weighted Modeling）** 方法，通过双模块协同优化，在不增加过多计算成本的前提下，显著提升少数类的识别性能。
+**Structure-Aware Adaptive Pseudo-Labeling for Semi-Supervised Partial Label Learning**
 
+> **Abstract:** *Semi-Supervised Partial Label Learning (SS-PLL) deals with data where each labeled instance is associated with an ambiguous candidate label set, while many unlabeled samples remain unused. Although recent deep SS and PL methods have achieved progress, they often suffer from unreliable pseudo-labels and unstable training caused by noisy predictions. Motivated by multi-view consistency learning, we propose a novel framework named Structure-Aware Adaptive Pseudo-Labeling (SAPL) for robust SS-PLL. Specifically, SAPL computes four weak-view predictions from dual students and their EMA teachers, and assigns each sample a unified consistency-based score. An adaptive quantile threshold is then used to select a small number of reliable pseudo-labeled instances, while rejecting inconsistent ones. To further enhance pseudo-label quality, SAPL introduces a Class Transition Graph (CTG) to rectify fused probabilities with dynamic inter-class structural priors. Extensive experiments show that SAPL consistently improves SS-PLL performance, especially under high ambiguity settings.*
 
-## 方法框架
-AMEMA 由两个核心模块组成：
+## 🚀 Framework
 
-### 1. 自适应动量更新模块（Adaptive Momentum）
-传统动量更新对所有类别采用相同系数，AMEMA 为每个类别分配动态动量系数：
-$$
-m_c = m_{base} \cdot \frac{N_{max}}{N_c}
-$$
-其中：
-- $m_{base}$：基础动量系数（默认0.9）
-- $N_{max}$：样本最多类别的数量
-- $N_c$：第$c$类的样本数量
+![SAPL Framework](assets/framework.png)
+*Fig 1. Overview of SAPL. (a) The framework integrates multi-view predictions from two student models and their EMA teachers. (b) A unified scoring mechanism evaluates consistency, inter-model agreement, and confidence. (c) Selected samples are rectified using a Class Transition Graph (CTG).*
 
-→ 少数类的动量系数更大，加速其梯度更新。
+## ✨ Key Features
 
+* **Unified Reliability Scoring:** Evaluates samples based on three metrics: *Consistency* (divergence among views), *Agreement* (consensus on hard labels), and *Confidence* (max probability).
+* **Adaptive Sample Selection:** Uses a dynamic quantile threshold ($q^t$) that evolves with training dynamics to filter reliable pseudo-labels.
+* **Class Transition Graph (CTG):** Models inter-class prediction transitions across epochs to rectify pseudo-labels using structural priors.
+* **Dual-Student + EMA:** Leverages two student networks and their Exponential Moving Average (EMA) teachers to generate robust weak-view predictions.
 
-### 2. EMA加权损失模块（EMA-weighted Loss）
-对多数类的损失施加**指数移动平均（EMA）权重**，降低其对模型的主导作用：
-$$
-\text{Loss}_{EMA}(c) = \text{CE}(y_c, \hat{y}_c) \cdot \gamma^{t}
-$$
-$$
-\text{Loss}_{AMEMA} = \sum_{c=1}^{C} \left( \text{Loss}_{EMA}(c) \cdot m_c \right)
-$$
-其中：
-- $\gamma$：EMA衰减系数（默认0.99）
-- $t$：当前训练轮次
+## 🛠️ Requirements
 
+The code is implemented using PyTorch.
 
-## 环境依赖
-```bash
-# 1. 创建并激活环境
-conda create -n amema python=3.8
-conda activate amema
-
-# 2. 安装PyTorch（根据CUDA版本调整，示例为CUDA 11.3）
-pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
-
-# 3. 安装其他依赖
-pip install numpy==1.23.5 pandas==1.5.3 scikit-learn==1.2.2 matplotlib==3.7.1 tqdm==4.64.1
-
-
+1. Clone this repository:
+   ```bash
+   git clone [https://github.com/12341232/SALP.git](https://github.com/12341232/SALP.git)
+   cd SALP
